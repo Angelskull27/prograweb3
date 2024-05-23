@@ -39,6 +39,32 @@ app.delete('/user/:id', async (req, res) => {
     res.json({ "message": "User deleted" });
 });
 
+app.put('/users/:id', async (req, res) => {
+    try {
+      const id = req.params.id;
+      const { titulo, precio, descripcion, imagen } = req.body;
+  
+      const value = await db.execute(`
+        UPDATE Productos
+        SET titulo = '${titulo}',
+            precio = '${precio}',
+            descripcion = '${descripcion}',
+            imagen = '${imagen}'
+        WHERE id = ${id};
+      `);
+  
+      if (value.rowsAffected === 0) {
+        res.status(404).json({ message: 'Producto no encontrado' });
+      } else {
+        res.json({ message: 'Producto actualizado' });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Error al actualizar el producto' });
+    }
+  });
+  
+
 app.listen(app.get('port'), () => {
     console.log(`Server listening on port ${app.get('port')}`);
 });
