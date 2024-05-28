@@ -2,9 +2,11 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const { createClient } = require('@libsql/client')
 const app = express()
+const cors = require('cors')
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
+app.use(cors())
 
 const db = createClient({
     url: "libsql://2205-oldskull27.turso.io",
@@ -22,14 +24,14 @@ app.get('/', (req, res) => {
     );
 });
 
-app.get('/users', async (req, res) => {
+app.get('/Productos', async (req, res) => {
     const result = await db.execute("SELECT * FROM Productos;");
     res.json(result.rows);
 });
 
 app.post('/user', async (req, res) => {
     console.log(req.body);
-    const value = await db.execute(`INSERT INTO Productos (titulo, precio, descripcion, imagen ) VALUES ('${req.body.titulo}', '${req.body.precio}', '${req.body.descripcion}', '${req.body.imagen}');`);
+    const value = await db.execute(`INSERT INTO Productos (title, price, description, images ) VALUES ('${req.body.title}', '${req.body.price}', '${req.body.description}', '${req.body.images}');`);
     res.json({ "message": value });
 }); 
 
@@ -42,14 +44,14 @@ app.delete('/user/:id', async (req, res) => {
 app.put('/users/:id', async (req, res) => {
     try {
       const id = req.params.id;
-      const { titulo, precio, descripcion, imagen } = req.body;
-  
+      const { title, price, description, images } = req.body;
+      console.log(req.params, req.body);
       const value = await db.execute(`
         UPDATE Productos
-        SET titulo = '${titulo}',
-            precio = '${precio}',
-            descripcion = '${descripcion}',
-            imagen = '${imagen}'
+        SET title = '${title}',
+            price = '${price}',
+            description = '${description}',
+            images = '${images}'
         WHERE id = ${id};
       `);
   
